@@ -11,7 +11,7 @@
               v-model="date"
               type="date"
               placeholder="选择日期"
-              style="display:inline-table; width: 15%; float:left">
+              style="display:inline-table; width: 12%; float:left">
       </el-date-picker>
       <el-button type="primary" @click="AddTodoList" style="float:left; margin: 2px;">新增</el-button>
       <el-button type="primary" @click="GetTodoLists" style="float:left; margin: 2px;">拉取所有事件</el-button>
@@ -19,19 +19,19 @@
 
     <h2>日程计划信息如下</h2>
     <el-row>
-      <el-table :data="todoItemList" style="width: 100%" :row-class-name="tableRowClassName">
-        <el-table-column prop="pk" label="数据库id" width="80">
-          <template scope="scope"> {{ scope.row.pk }} </template>
-        </el-table-column>
-        <el-table-column prop="todo_item" label="计划要做的事情" width="800">
-          <template scope="scope"> {{ scope.row.fields.todo_item }} </template>
-        </el-table-column>
-        <el-table-column prop="todo_date" label="计划要做时间" width="150">
-          <template scope="scope"> {{ scope.row.fields.todo_date }} </template>
-        </el-table-column>
-        <el-table-column prop="bFinish" label="是否完成" width="100">
-          <template scope="scope"> {{ scope.row.fields.bFinish }} </template>
-        </el-table-column>
+      <el-table :data="todoItemList"
+                style="width: 100%"
+                :row-class-name="tableRowClassName"
+                :default-sort = "{prop: 'todo_date', order: 'descending'}">
+          <el-table-column type="index" width="50" label="序号"></el-table-column>
+
+          <el-table-column prop="todo_date" label="计划要做时间" width="150" sortable></el-table-column>
+
+          <el-table-column prop="todo_item" label="计划要做的事情" width="800"></el-table-column>
+
+          <el-table-column prop="bFinish" label="是否完成" width="100" sortable>
+              <template scope="scope"> {{ scope.row.bFinish }} </template>
+          </el-table-column>
       </el-table>
     </el-row>
   </div>
@@ -84,7 +84,7 @@ export default {
                 var res = JSON.parse(response.bodyText)
                 console.log(res)
                 if (res.error_num == 0) {
-                  this.todoItemList = res['list']
+                  this.todoItemList = res['todo_lists']
                 } else {
                   this.$message.error('查询书籍失败')
                   console.log(res['msg'])
@@ -118,7 +118,7 @@ export default {
     },
 
     tableRowClassName({row, rowIndex}) {
-      if (this.todoItemList[rowIndex].fields.bFinish) {
+      if (this.todoItemList[rowIndex].bFinish) {
         return 'success-row';
       } else {
         return 'warning-row';
