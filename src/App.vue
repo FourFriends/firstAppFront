@@ -21,25 +21,24 @@
     <el-row>
       <el-table :data="todoItemList"
                 style="width: 100%"
-                :row-class-name="tableRowClassName"
-                :default-sort = "{prop: 'todo_date', order: 'descending'}">
+                :row-class-name="tableRowClassName">
           <el-table-column type="index" width="50" label="序号"></el-table-column>
 
-          <el-table-column prop="todo_date" label="计划要做时间" width="150" sortable></el-table-column>
+          <el-table-column prop="todo_date" label="计划要做时间" width="150" ></el-table-column>
 
           <el-table-column prop="todo_item" label="计划要做的事情" width="800"></el-table-column>
 
-          <el-table-column prop="bFinish" label="是否完成" width="100" sortable>
+          <el-table-column prop="bFinish" label="是否完成" width="100">
               <template scope="scope"> {{ scope.row.bFinish }} </template>
           </el-table-column>
 
           <el-table-column
                   fixed="right"
                   label="操作"
-                  width="100">
+                  width="160">
               <template slot-scope="scope">
-                  <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-                  <el-button type="text" size="small">编辑</el-button>
+                  <el-button @click="handleStatus(scope.row)" type="text">修改状态</el-button>
+                  <el-button @click="handleDelete(scope.row)" type="text" >删除</el-button>
               </template>
           </el-table-column>
 
@@ -93,7 +92,7 @@ export default {
       this.$http.get('http://127.0.0.1:8000/v2/get_todo_items')
               .then((response) => {
                 var res = JSON.parse(response.bodyText)
-                console.log(res)
+                //console.log(res)
                 if (res.error_num == 0) {
                   this.todoItemList = res['todo_lists']
                 } else {
@@ -112,7 +111,7 @@ export default {
       var todo_json = JSON.stringify(todo_item);
       console.log(todo_json)
 
-      this.$http.post('http://127.0.0.1:8000/v2/add_todo_item',todo_json,{emulateJSON:true})
+      this.$http.post('http://127.0.0.1:8000/v2/post_todo_item',todo_json,{emulateJSON:true})
               .then((response) => {
                 var res = JSON.parse(response.bodyText)
                 console.log(res)
@@ -135,6 +134,61 @@ export default {
         return 'warning-row';
       }
     },
+      //修改状态
+      handleStatus(row) {
+          //console.log(row.pk);
+          var todo_item ={}
+          todo_item['id']=row.pk
+          if(row.bFinish){
+              todo_item['bFinish'] = false
+          }
+          else {
+              todo_item['bFinish'] = true
+          }
+          console.log(todo_item)
+          var todo_json = JSON.stringify(todo_item);
+          //console.log(todo_json)
+          this.$http.put('http://127.0.0.1:8000/v2/put_todo_item',todo_json,{emulateJSON:true})
+              .then((response) => {
+                  var res = JSON.parse(response.bodyText)
+                  console.log(res)
+                  if (res.error_num == 0)
+                  {
+                      this.GetTodoLists()
+
+                  }
+                  else
+                  {
+                      this.$message.error('修改日程状态失败，请重试')
+                      console.log(res['msg'])
+                  }
+              })
+      },
+      //删除相关状态代码
+      handleDelete(row) {
+          //console.log(row.pk);
+          var todo_item ={}
+          todo_item['id']=row.pk
+          var todo_json = JSON.stringify(todo_item);
+          console.log(todo_json)
+
+          this.$http.put('http://127.0.0.1:8000/v2/delete_todo_item',todo_json,{emulateJSON:true})
+              .then((response) => {
+                  var res = JSON.parse(response.bodyText)
+                  console.log(res)
+                  if (res.error_num == 0)
+                  {
+                      this.GetTodoLists()
+
+                  }
+                  else
+                  {
+                      this.$message.error('删除日程失败，请重试')
+                      console.log(res['msg'])
+                  }
+              })
+      },
+
 
   },
 
