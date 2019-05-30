@@ -89,7 +89,7 @@ export default {
 
   methods:{
     GetTodoLists() {
-      this.$http.get('http://127.0.0.1:8000/v2/get_todo_items')
+      this.$http.get('http://129.204.173.107:8000/v2/get_todo_items')
               .then((response) => {
                 var res = JSON.parse(response.bodyText)
                 //console.log(res)
@@ -111,18 +111,19 @@ export default {
       var todo_json = JSON.stringify(todo_item);
       console.log(todo_json)
 
-      this.$http.post('http://127.0.0.1:8000/v2/post_todo_item',todo_json,{emulateJSON:true})
+      this.$http.post('http://129.204.173.107:8000/v2/post_todo_item',todo_json,{emulateJSON:true})
               .then((response) => {
                 var res = JSON.parse(response.bodyText)
                 console.log(res)
                 if (res.error_num == 0)
                   {
-                  this.GetTodoLists()
+                      this.GetTodoLists()
+                      this.input=''
                   }
                 else
                   {
-                  this.$message.error('新增日程失败，请重试')
-                  console.log(res['msg'])
+                        this.$message.error('新增日程失败，请重试')
+                        console.log(res['msg'])
                   }
               })
     },
@@ -148,7 +149,7 @@ export default {
           console.log(todo_item)
           var todo_json = JSON.stringify(todo_item);
           //console.log(todo_json)
-          this.$http.put('http://127.0.0.1:8000/v2/put_todo_item',todo_json,{emulateJSON:true})
+          this.$http.put('http://129.204.173.107:8000/v2/put_todo_item',todo_json,{emulateJSON:true})
               .then((response) => {
                   var res = JSON.parse(response.bodyText)
                   console.log(res)
@@ -172,7 +173,7 @@ export default {
           var todo_json = JSON.stringify(todo_item);
           console.log(todo_json)
 
-          this.$http.put('http://127.0.0.1:8000/v2/delete_todo_item',todo_json,{emulateJSON:true})
+          this.$http.put('http://129.204.173.107:8000/v2/delete_todo_item',todo_json,{emulateJSON:true})
               .then((response) => {
                   var res = JSON.parse(response.bodyText)
                   console.log(res)
